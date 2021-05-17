@@ -7,8 +7,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -48,6 +50,26 @@ public class AutosControllerTests {
                 // Assert
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.automobiles", hasSize(5)));
+    }
+//    ADD IMAGE FIELD TO CAR
+//    GET: CAR'S IMAGE HERE IMAGE IS RESOURCE - BYTE[]
+
+
+//    POST: SAVE CAR'S IMAGE
+    //    post argument: HERE IMAGE IS MULTIPART FILE
+    //    post returns: auto with updated image
+    @Test
+    void addImageToAuto_withVinAndMultipartFile_returnsByteArray() throws Exception {
+        Automobile auto = new Automobile(1967, "ford", "mustang", "ABC123");
+        //  String json = "{\"year\":1967,\"make\":\"Ford\",\"model\":\"Mustang\",\"color\":null,\"owner\":null,\"vin\":\"AABBCC\"}";
+        when(autosService.addImageToCar(anyString(), any(MultipartFile.class))).thenReturn(any(byte[].class));
+
+        mockMvc.perform(post("/api/autos")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(mapper.writeValueAsString(auto)))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("make").value("ford"));
     }
 
     @Test
